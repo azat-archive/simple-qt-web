@@ -12,12 +12,14 @@
 #define WRAPPER_QWEBPAGE_H
 
 #include <QWebPage>
+#include <QWebElement>
 
 namespace Wrapper {
 	class QWebPage : public ::QWebPage {
 	Q_OBJECT
 
 	public:
+		static const int OPTIMAL_MSECS_BETWEEN_CHANGE_POSITION = 4;
 		static QString userAgent;
 
 		QWebPage(QObject *parent = NULL);
@@ -28,6 +30,8 @@ namespace Wrapper {
 		virtual bool javaScriptConfirm(QWebFrame *frame, const QString &msg);
 
 		virtual QString userAgentForUrl(const QUrl &url) const;
+
+		bool moveMouseTo(QWebElement elementMoveTo) const;
 	};
 }
 

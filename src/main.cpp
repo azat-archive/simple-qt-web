@@ -43,6 +43,7 @@ struct Options {
 	QString element; // default element selector to find
 	QString userAgent; // default is that using in ga-kw
 	QString socks;
+	QString moveElementPrefix;
 	bool socksResolver;
 };
 Options options = {
@@ -51,6 +52,7 @@ Options options = {
 	QString("input[type=submit]"),
 	QString("Mozilla/5.0 (X11; U; Linux i686;) Gecko/20110101 Firefox/3.6.13"),
 	QString(""),
+	QString("Move to "),
 	false,
 };
 
@@ -235,7 +237,15 @@ int main(int argc, char** argv) {
 				}
 			}
 
-			view->page()->mainFrame()->evaluateJavaScript(jsToExecute);	
+			if (jsToExecute.startsWith(options.moveElementPrefix)) {
+				QString moveMouseToElementSelector = jsToExecute.remove(0, options.moveElementPrefix.length());
+
+				// Reinterpret pointer to Wrapper class
+				Wrapper::QWebPage *page = reinterpret_cast<Wrapper::QWebPage *>(view->page());
+				page->moveMouseTo(page->mainFrame()->findFirstElement(moveMouseToElementSelector));
+			} else {
+				view->page()->mainFrame()->evaluateJavaScript(jsToExecute);	
+			}
 		}), SLOT(call()));
 		stdinNotifier->setEnabled(true);
 	}

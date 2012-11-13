@@ -9,6 +9,7 @@
  */
 
 #include "qwebpage.h"
+#include "connector.h"
 
 #include <QDebug>
 
@@ -51,6 +52,44 @@ namespace Wrapper {
 		Q_UNUSED(url);
 
 		return userAgent; 
+	}
+
+	bool QWebPage::moveMouseTo(QWebElement elementMoveTo) const {
+		if (elementMoveTo.isNull()) {
+			return false;
+		}
+
+		qDebug() << "Cursor position" << QCursor::pos();
+
+		QRect geometry = elementMoveTo.geometry();
+		// TODO : some randomize
+		QPoint moveTo;
+		// Calculate real center, not the upper border
+		{
+			moveTo = geometry.bottomLeft();
+			moveTo.setX(moveTo.x() + (geometry.width() / 2));
+			moveTo.setY(moveTo.y() + (geometry.height() / 2));
+		}
+		QPoint moveFrom = QCursor::pos();
+
+		Module::Connector connector;
+
+		// Move
+		while (moveFrom != moveTo) {
+			if (moveTo.x() != moveFrom.x()) {
+				moveFrom.setX((moveFrom.x() > moveTo.x()) ? (moveFrom.x() - 1) : (moveFrom.x() + 1));
+			}
+
+			if (moveTo.y() != moveFrom.y()) {
+				moveFrom.setY((moveFrom.y() > moveTo.y()) ? (moveFrom.y() - 1) : (moveFrom.y() + 1));
+			}
+
+			QCursor::setPos(moveFrom);
+
+			connector.waitWithoutGuiBlock(OPTIMAL_MSECS_BETWEEN_CHANGE_POSITION);
+		}
+
+		return true;
 	}
 }
 
