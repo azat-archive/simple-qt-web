@@ -1,0 +1,4 @@
+*.[ao]
+moc_*
+Makefile
+/main
