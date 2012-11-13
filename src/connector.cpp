@@ -22,16 +22,16 @@ namespace Module {
 	Connector::~Connector() {
 	}
 
-	void Connector::_connectAndExecFirstSync(QObject *sender, const char *signal, const QObject *receiver, const char *member, Qt::ConnectionType type, const char* file, int line) const {
-		_connectAndExecSync(sender, signal, receiver, member, type, file, line);
+	void Connector::connectAndExecFirstSync(QObject *sender, const char *signal, const QObject *receiver, const char *member, Qt::ConnectionType type, const char* file, int line) const {
+		connectAndExecSync(sender, signal, receiver, member, type, file, line);
 		sender->disconnect(receiver);
 	}
 
-	void Connector::_connectAndExecFirstSync(QObject *sender, const char *signal, const char *member, Qt::ConnectionType type) const {
-		return _connectAndExecFirstSync(sender, signal, this, member, type);
+	void Connector::connectAndExecFirstSync(QObject *sender, const char *signal, const char *member, Qt::ConnectionType type) const {
+		return connectAndExecFirstSync(sender, signal, this, member, type);
 	}
 
-	void Connector::_connectAndExecSync(const QObject *sender, const char *signal, const QObject *receiver, const char *member, Qt::ConnectionType type, const char* file, int line) const {
+	void Connector::connectAndExecSync(const QObject *sender, const char *signal, const QObject *receiver, const char *member, Qt::ConnectionType type, const char* file, int line) const {
 		QDebug debugLogger = qDebug() << "connectAndExecSync";
 		if (file || line) {
 			debugLogger << file << ":" << line;
@@ -46,28 +46,28 @@ namespace Module {
 		loop.exec();
 	}
 
-	void Connector::_connectAndExecSync(const QObject *sender, const char *signal, const char *member, Qt::ConnectionType type) const {
-		return _connectAndExecSync(sender, signal, this, member, type);
+	void Connector::connectAndExecSync(const QObject *sender, const char *signal, const char *member, Qt::ConnectionType type) const {
+		return connectAndExecSync(sender, signal, this, member, type);
 	}
 
-	void Connector::_connectAndExecAllSync(const QObject *sender, const char *signal, const QObject *receiver, const char *member, Qt::ConnectionType type, const char* file, int line) {
-		_connectAndExecSync(sender, signal, receiver, member, type, file, line);
-		_waitWithoutGuiBlock();
+	void Connector::connectAndExecAllSync(const QObject *sender, const char *signal, const QObject *receiver, const char *member, Qt::ConnectionType type, const char* file, int line) {
+		connectAndExecSync(sender, signal, receiver, member, type, file, line);
+		waitWithoutGuiBlock();
 	}
 
-	void Connector::_connectAndExecAllSync(const QObject *sender, const char *signal, const char *member, Qt::ConnectionType type) {
-		return _connectAndExecAllSync(sender, signal, this, member, type);
+	void Connector::connectAndExecAllSync(const QObject *sender, const char *signal, const char *member, Qt::ConnectionType type) {
+		return connectAndExecAllSync(sender, signal, this, member, type);
 	}
 
-	void Connector::_waitWithoutGuiBlock(long long msecs) {
+	void Connector::waitWithoutGuiBlock(long long msecs) {
 		QTimer timer;
 		timer.start(msecs);
-		_connectAndExecSync(&timer, SIGNAL(timeout()));
+		connectAndExecSync(&timer, SIGNAL(timeout()));
 	}
 
-	void Connector::_waitForBoolWithoutGuiBlock(bool& variable, long long msecs, long long stepInMsec) {
+	void Connector::waitForBoolWithoutGuiBlock(bool& variable, long long msecs, long long stepInMsec) {
 		if (stepInMsec == msecs) {
-			_waitWithoutGuiBlock(msecs);
+			waitWithoutGuiBlock(msecs);
 
 			qDebug() << "Bool variable become true after" << msecs << "msecs";
 			if (variable) {
@@ -76,7 +76,7 @@ namespace Module {
 		} else {
 			long timerMsec = 0;
 			while (timerMsec < msecs) {
-				_waitWithoutGuiBlock(stepInMsec);
+				waitWithoutGuiBlock(stepInMsec);
 				timerMsec += stepInMsec;
 
 				if (variable) {

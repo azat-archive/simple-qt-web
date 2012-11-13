@@ -21,24 +21,23 @@ namespace Module {
 		Connector(QObject* parent = NULL);
 		virtual ~Connector();
 
-	protected:
 		// wait signal (async exec), using QEventLoop
 		// and after execute finished -> disconnect
-		void _connectAndExecFirstSync(QObject *sender, const char *signal, const QObject *receiver, const char *member = NULL, Qt::ConnectionType type = Qt::AutoConnection, const char* file = NULL, int line = 0) const;
-		void _connectAndExecFirstSync(QObject *sender, const char *signal, const char *member = NULL, Qt::ConnectionType type = Qt::AutoConnection) const;
+		void connectAndExecFirstSync(QObject *sender, const char *signal, const QObject *receiver, const char *member = NULL, Qt::ConnectionType type = Qt::AutoConnection, const char* file = NULL, int line = 0) const;
+		void connectAndExecFirstSync(QObject *sender, const char *signal, const char *member = NULL, Qt::ConnectionType type = Qt::AutoConnection) const;
 
 		// wait signal (async exec), using QEventLoop
-		void _connectAndExecSync(const QObject *sender, const char *signal, const QObject *receiver, const char *member = NULL, Qt::ConnectionType type = Qt::AutoConnection, const char* file = NULL, int line = 0) const;
-		void _connectAndExecSync(const QObject *sender, const char *signal, const char *member = NULL, Qt::ConnectionType type = Qt::AutoConnection) const;
+		void connectAndExecSync(const QObject *sender, const char *signal, const QObject *receiver, const char *member = NULL, Qt::ConnectionType type = Qt::AutoConnection, const char* file = NULL, int line = 0) const;
+		void connectAndExecSync(const QObject *sender, const char *signal, const char *member = NULL, Qt::ConnectionType type = Qt::AutoConnection) const;
 
 		// wait ALL signal (async exec), using QEventLoop
-		void _connectAndExecAllSync(const QObject *sender, const char *signal, const QObject *receiver, const char *member = NULL, Qt::ConnectionType type = Qt::AutoConnection, const char* file = NULL, int line = 0);
-		void _connectAndExecAllSync(const QObject *sender, const char *signal, const char *member = NULL, Qt::ConnectionType type = Qt::AutoConnection);
+		void connectAndExecAllSync(const QObject *sender, const char *signal, const QObject *receiver, const char *member = NULL, Qt::ConnectionType type = Qt::AutoConnection, const char* file = NULL, int line = 0);
+		void connectAndExecAllSync(const QObject *sender, const char *signal, const char *member = NULL, Qt::ConnectionType type = Qt::AutoConnection);
 
 		// wait using timer, for non-blocking GUI
-		void _waitWithoutGuiBlock(long long msecs = 1000);
+		void waitWithoutGuiBlock(long long msecs = 1000);
 		// wait for bool variable become true using timer, for non-blocking GUI
-		void _waitForBoolWithoutGuiBlock(bool& variable, long long msecs = DEFAULT_TIMEOUT_MSEC, long long stepInMsec = 1000);
+		void waitForBoolWithoutGuiBlock(bool& variable, long long msecs = DEFAULT_TIMEOUT_MSEC, long long stepInMsec = 1000);
 	};
 }
 
