@@ -74,6 +74,7 @@ namespace Wrapper {
 
 		Module::Connector connector;
 
+		// TODO : move more granular
 		// Move
 		while (moveFrom != moveTo) {
 			if (moveTo.x() != moveFrom.x()) {
