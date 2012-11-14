@@ -100,9 +100,9 @@ namespace Wrapper {
 			}
 
 			if (xDiff < yDiff) {
-				ratioY = xDiff ? int((yDiff / xDiff) + 0.5) : 0;
+				ratioY = xDiff ? (yDiff / xDiff) : 0;
 			} else {
-				ratioX = yDiff ? int((xDiff / yDiff) + 0.5) : 0;
+				ratioX = yDiff ? (xDiff / yDiff) : 0;
 			}
 
 			maxLoopIterations = ratioX ? (xDiff / ratioX) : (yDiff / ratioY);
@@ -112,14 +112,29 @@ namespace Wrapper {
 		}
 		qDebug() << "Ratio" << "x:" << ratioX << "y:" << ratioY;
 
+		// Present moveFrom as float, for add floating ratio to it.
+		struct FloatPoint {
+			float x;
+			float y;
+
+			FloatPoint(const QPoint &a) {
+				x = a.x();
+				y = a.y();
+			}
+
+			bool operator ==(const FloatPoint &a) {
+				return ((a.x == this->x) && (a.y == this->y));
+			}
+		} floatMoveFromPoint(moveFrom);
+
 		// Move
-		for (int i = 0; (moveFrom != moveTo /* Just in case */) || (i < maxLoopIterations); ++i) {
+		for (int i = 0; ((moveFrom != moveTo /* Just in case */) && (i < maxLoopIterations)); ++i) {
 			if (moveTo.x() != moveFrom.x()) {
-				moveFrom.setX((moveFrom.x() > moveTo.x()) ? (moveFrom.x() - ratioX) : (moveFrom.x() + ratioX));
+				moveFrom.setX((moveFrom.x() > moveTo.x()) ? (floatMoveFromPoint.x -= ratioX) : (floatMoveFromPoint.x += ratioX));
 			}
 
 			if (moveTo.y() != moveFrom.y()) {
-				moveFrom.setY((moveFrom.y() > moveTo.y()) ? (moveFrom.y() - ratioY) : (moveFrom.y() + ratioY));
+				moveFrom.setY((moveFrom.y() > moveTo.y()) ? (floatMoveFromPoint.y -= ratioY) : (floatMoveFromPoint.y += ratioY));
 			}
 
 			QCursor::setPos(moveFrom);
