@@ -87,6 +87,7 @@ namespace Wrapper {
 		// default ratio is 1
 		float ratioX = 1;
 		float ratioY = 1;
+		int maxLoopIterations = 0;
 		{
 			int xDiff = std::abs(moveTo.x() - moveFrom.x());
 			int yDiff = std::abs(moveTo.y() - moveFrom.y());
@@ -96,12 +97,16 @@ namespace Wrapper {
 			} else {
 				ratioX = int((xDiff / yDiff) + 0.5);
 			}
+
+			maxLoopIterations = std::max(xDiff, yDiff);
+
+			qDebug() << "Diff" << "x:" << xDiff << "y:" << yDiff;
+			qDebug() << "Max loop interations" << maxLoopIterations;
 		}
 		qDebug() << "Ratio" << "x:" << ratioX << "y:" << ratioY;
 
-		// TODO : almos equal
 		// Move
-		while (moveFrom != moveTo) {
+		for (int i = 0; (i < maxLoopIterations) || (moveFrom != moveTo); ++i) {
 			if (moveTo.x() != moveFrom.x()) {
 				moveFrom.setX((moveFrom.x() > moveTo.x()) ? (moveFrom.x() - ratioX) : (moveFrom.x() + ratioX));
 			}
