@@ -39,17 +39,18 @@ std::unique_ptr<QSocketNotifier> stdinNotifier;
 
 struct Options {
 	bool maximize;
-	QString url; // default url is "google.com"
+	QString url; // default url is "kernel.org"
 	QString element; // default element selector to find
 	QString userAgent; // default is that using in ga-kw
 	QString socks;
 	QString moveElementPrefix;
 	bool socksResolver;
 };
+// Set default options
 Options options = {
 	false,
-	QString("google.com"),
-	QString("input[type=submit]"),
+	QString("kernel.org"),
+	QString("img"),
 	QString("Mozilla/5.0 (X11; U; Linux i686;) Gecko/20110101 Firefox/3.6.13"),
 	QString(""),
 	QString("Move to "),
