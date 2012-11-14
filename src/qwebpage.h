@@ -32,11 +32,6 @@ namespace Wrapper {
 		virtual QString userAgentForUrl(const QUrl &url) const;
 
 		// This method move mouse cursor to element, with delay between iterations of moving
-		//
-		// It has relative error, and value of this error depends on difference between diffX and diffY,
-		// where diffN = moveTo.x() - moveFrom.x()
-		//
-		// So don't use it or FIX it for elements with small size
 		bool moveMouseTo(QWebElement elementMoveTo, int delay = OPTIMAL_MSECS_BETWEEN_CHANGE_POSITION) const;
 	};
 }
