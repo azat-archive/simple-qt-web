@@ -61,6 +61,7 @@ namespace Wrapper {
 
 		qDebug() << "Cursor position" << QCursor::pos();
 
+		// TODO : add detecting global position, not position on current monitor
 		QRect geometry = elementMoveTo.geometry();
 		// TODO : some randomize
 		QPoint moveTo;
