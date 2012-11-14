@@ -117,7 +117,7 @@ namespace Wrapper {
 
 			QCursor::setPos(moveFrom);
 
-			connector.waitWithoutGuiBlock(delay + 100);
+			connector.waitWithoutGuiBlock(delay);
 		}
 
 		return true;
