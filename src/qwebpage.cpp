@@ -15,6 +15,8 @@
 #include <QDesktopWidget>
 #include <QApplication>
 
+#include <complex>
+
 namespace Wrapper {
 	QString QWebPage::userAgent = "qt";
 
@@ -82,20 +84,35 @@ namespace Wrapper {
 
 		Module::Connector connector;
 
-		// TODO : move more granular
+		// default ratio is 1
+		float ratioX = 1;
+		float ratioY = 1;
+		{
+			int xDiff = std::abs(moveTo.x() - moveFrom.x());
+			int yDiff = std::abs(moveTo.y() - moveFrom.y());
+
+			if (xDiff < yDiff) {
+				ratioY = int((yDiff / xDiff) + 0.5);
+			} else {
+				ratioX = int((xDiff / yDiff) + 0.5);
+			}
+		}
+		qDebug() << "Ratio" << "x:" << ratioX << "y:" << ratioY;
+
+		// TODO : almos equal
 		// Move
 		while (moveFrom != moveTo) {
 			if (moveTo.x() != moveFrom.x()) {
-				moveFrom.setX((moveFrom.x() > moveTo.x()) ? (moveFrom.x() - 1) : (moveFrom.x() + 1));
+				moveFrom.setX((moveFrom.x() > moveTo.x()) ? (moveFrom.x() - ratioX) : (moveFrom.x() + ratioX));
 			}
 
 			if (moveTo.y() != moveFrom.y()) {
-				moveFrom.setY((moveFrom.y() > moveTo.y()) ? (moveFrom.y() - 1) : (moveFrom.y() + 1));
+				moveFrom.setY((moveFrom.y() > moveTo.y()) ? (moveFrom.y() - ratioY) : (moveFrom.y() + ratioY));
 			}
 
 			QCursor::setPos(moveFrom);
 
-			connector.waitWithoutGuiBlock(delay);
+			connector.waitWithoutGuiBlock(delay + 100);
 		}
 
 		return true;
