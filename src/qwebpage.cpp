@@ -77,6 +77,8 @@ namespace Wrapper {
 		// Calculate real center, not the upper border
 		{
 			moveTo = geometry.bottomLeft();
+			qDebug() << "Geometry bottom left" << moveTo;
+
 			moveTo.setX(viewFrameGeometry.x() + moveTo.x() + (geometry.width() / 2));
 			moveTo.setY(viewFrameGeometry.y() + moveTo.y() + (geometry.height() / 2));
 		}
