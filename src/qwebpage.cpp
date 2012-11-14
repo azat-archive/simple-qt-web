@@ -100,9 +100,9 @@ namespace Wrapper {
 			}
 
 			if (xDiff < yDiff) {
-				ratioY = xDiff ? (yDiff / xDiff) : 0;
+				ratioY = xDiff ? ((float)yDiff / (float)xDiff) : 0;
 			} else {
-				ratioX = yDiff ? (xDiff / yDiff) : 0;
+				ratioX = yDiff ? ((float)xDiff / (float)yDiff) : 0;
 			}
 
 			maxLoopIterations = ratioX ? (xDiff / ratioX) : (yDiff / ratioY);
