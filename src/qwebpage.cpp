@@ -105,7 +105,7 @@ namespace Wrapper {
 				ratioX = yDiff ? int((xDiff / yDiff) + 0.5) : 0;
 			}
 
-			maxLoopIterations = std::max(xDiff, yDiff);
+			maxLoopIterations = ratioX ? (xDiff / ratioX) : (yDiff / ratioY);
 
 			qDebug() << "Diff" << "x:" << xDiff << "y:" << yDiff;
 			qDebug() << "Max loop interations" << maxLoopIterations;
@@ -113,7 +113,7 @@ namespace Wrapper {
 		qDebug() << "Ratio" << "x:" << ratioX << "y:" << ratioY;
 
 		// Move
-		for (int i = 0; (i < maxLoopIterations) || (moveFrom != moveTo); ++i) {
+		for (int i = 0; (moveFrom != moveTo /* Just in case */) || (i < maxLoopIterations); ++i) {
 			if (moveTo.x() != moveFrom.x()) {
 				moveFrom.setX((moveFrom.x() > moveTo.x()) ? (moveFrom.x() - ratioX) : (moveFrom.x() + ratioX));
 			}
