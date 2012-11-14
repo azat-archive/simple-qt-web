@@ -12,6 +12,8 @@
 #include "connector.h"
 
 #include <QDebug>
+#include <QDesktopWidget>
+#include <QApplication>
 
 namespace Wrapper {
 	QString QWebPage::userAgent = "qt";
@@ -59,19 +61,24 @@ namespace Wrapper {
 			return false;
 		}
 
-		qDebug() << "Cursor position" << QCursor::pos();
+		QPoint moveFrom = QCursor::pos();
+		qDebug() << "Move from (cursor position)" << moveFrom;
 
-		// TODO : add detecting global position, not position on current monitor
+		QRect viewFrameGeometry = view()->frameGeometry();
+		qDebug() << "View frame geometry" << viewFrameGeometry;
+
 		QRect geometry = elementMoveTo.geometry();
+		qDebug() << "Element geometry" << geometry;
+
 		// TODO : some randomize
 		QPoint moveTo;
 		// Calculate real center, not the upper border
 		{
 			moveTo = geometry.bottomLeft();
-			moveTo.setX(moveTo.x() + (geometry.width() / 2));
-			moveTo.setY(moveTo.y() + (geometry.height() / 2));
+			moveTo.setX(viewFrameGeometry.x() + moveTo.x() + (geometry.width() / 2));
+			moveTo.setY(viewFrameGeometry.y() + moveTo.y() + (geometry.height() / 2));
 		}
-		QPoint moveFrom = QCursor::pos();
+		qDebug() << "Move to" << moveTo;
 
 		Module::Connector connector;
 
