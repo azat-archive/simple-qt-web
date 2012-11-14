@@ -92,10 +92,15 @@ namespace Wrapper {
 			int xDiff = std::abs(moveTo.x() - moveFrom.x());
 			int yDiff = std::abs(moveTo.y() - moveFrom.y());
 
+			// We already at this element
+			if ((xDiff == 0) && (yDiff == 0)) {
+				return true;
+			}
+
 			if (xDiff < yDiff) {
-				ratioY = int((yDiff / xDiff) + 0.5);
+				ratioY = xDiff ? int((yDiff / xDiff) + 0.5) : 0;
 			} else {
-				ratioX = int((xDiff / yDiff) + 0.5);
+				ratioX = yDiff ? int((xDiff / yDiff) + 0.5) : 0;
 			}
 
 			maxLoopIterations = std::max(xDiff, yDiff);
