@@ -54,7 +54,7 @@ namespace Wrapper {
 		return userAgent; 
 	}
 
-	bool QWebPage::moveMouseTo(QWebElement elementMoveTo) const {
+	bool QWebPage::moveMouseTo(QWebElement elementMoveTo, int delay) const {
 		if (elementMoveTo.isNull()) {
 			return false;
 		}
@@ -88,7 +88,7 @@ namespace Wrapper {
 
 			QCursor::setPos(moveFrom);
 
-			connector.waitWithoutGuiBlock(OPTIMAL_MSECS_BETWEEN_CHANGE_POSITION);
+			connector.waitWithoutGuiBlock(delay);
 		}
 
 		return true;

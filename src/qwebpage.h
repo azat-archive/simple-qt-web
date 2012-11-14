@@ -19,7 +19,7 @@ namespace Wrapper {
 	Q_OBJECT
 
 	public:
-		static const int OPTIMAL_MSECS_BETWEEN_CHANGE_POSITION = 4;
+		static const int OPTIMAL_MSECS_BETWEEN_CHANGE_POSITION = 2;
 		static QString userAgent;
 
 		QWebPage(QObject *parent = NULL);
@@ -31,7 +31,7 @@ namespace Wrapper {
 
 		virtual QString userAgentForUrl(const QUrl &url) const;
 
-		bool moveMouseTo(QWebElement elementMoveTo) const;
+		bool moveMouseTo(QWebElement elementMoveTo, int delay = OPTIMAL_MSECS_BETWEEN_CHANGE_POSITION) const;
 	};
 }
 
