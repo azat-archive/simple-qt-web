@@ -32,6 +32,8 @@ namespace Wrapper {
 		virtual QString userAgentForUrl(const QUrl &url) const;
 
 		bool moveMouseTo(QWebElement elementMoveTo) const;
+		bool clickTo(QWebElement elementMoveTo) const;
+		bool setCursorTo(QWebElement elementMoveTo) const;
 	};
 }
 
