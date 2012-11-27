@@ -56,18 +56,21 @@ Options options = {
 	false,
 };
 
+QStringList getCliArguments(int argc, char** argv) {
+	QStringList cliArguments;
+
+	for (int i = 0; i < argc; ++i) {
+		cliArguments << QString::fromLocal8Bit(argv[i]);
+	}
+
+	return cliArguments;
+}
+
 int main(int argc, char** argv) {
-	std::unique_ptr<QApplication> a = NULL;
-
-	// For help we don't need GUI mode.
-	// But Qt doesn't allow enable gui after.
-	// So just use unique_ptr.
-	a.reset(new QApplication(argc, argv, false));
-
 	// Parse options
 	// TODO: http://api.kde.org/4.x-api/kdelibs-apidocs/kdecore/html/classKCmdLineArgs.html
 	{
-		QStringList arguments = a->arguments();
+		QStringList arguments = getCliArguments(argc, argv);
 		if ((arguments.indexOf("-h") != -1) || (arguments.indexOf("--help") != -1)) {
 			qDebug() << "QtWeb options:";
 			qDebug() << "";
@@ -112,13 +115,13 @@ int main(int argc, char** argv) {
 		qDebug() << "Socks resolver" << options.socksResolver;
 	}
 
-	a.reset(new QApplication(argc, argv));
+	QApplication a(argc, argv);
 
 	// release view
 	Lambda qHandler([&]() {
 		view.reset();
 	});
-	QObject::connect(a.get(), SIGNAL(aboutToQuit()), &qHandler, SLOT(call()));
+	QObject::connect(&a, SIGNAL(aboutToQuit()), &qHandler, SLOT(call()));
 	
 	view.reset(new QWebView);
 	view->setPage(new Wrapper::QWebPage);
@@ -210,6 +213,6 @@ int main(int argc, char** argv) {
 		stdinNotifier->setEnabled(true);
 	}
 
-	return a->exec();
+	return a.exec();
 }
 
