@@ -1,4 +1,4 @@
 *.[ao]
 moc_*
 Makefile
-/main
+/web
