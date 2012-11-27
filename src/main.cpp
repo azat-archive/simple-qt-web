@@ -183,14 +183,14 @@ int main(int argc, char** argv) {
 		QNetworkProxy proxy;
 		proxy.setType(QNetworkProxy::Socks5Proxy);
 
-		QStringList splitedSocks = options.socks.split(":");
-		if (splitedSocks.count() != 2) {
+		int colonPosition = options.socks.lastIndexOf(":");
+		if (colonPosition == -1) {
 			qDebug() << "Malformed proxy (HOST:PORT is needed)";
 			return EXIT_FAILURE;
 		}
 
-		proxy.setHostName(splitedSocks[0]);
-		proxy.setPort(splitedSocks[1].toInt());
+		proxy.setHostName(options.socks.left(colonPosition));
+		proxy.setPort(options.socks.right(options.socks.length() - 1 - colonPosition).toInt());
 
 		if (options.socksResolver) {
 			proxy.setCapabilities(proxy.capabilities() | QNetworkProxy::HostNameLookupCapability);
