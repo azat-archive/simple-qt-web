@@ -55,13 +55,21 @@ Options options = {
 	false,
 };
 
-int main(int argc, char** argv) {
-	QApplication a(argc, argv);
+QStringList getCliArguments(int argc, char** argv) {
+	QStringList cliArguments;
 
+	for (int i = 0; i < argc; ++i) {
+		cliArguments << QString::fromLocal8Bit(argv[i]);
+	}
+
+	return cliArguments;
+}
+
+int main(int argc, char** argv) {
 	// Parse options
 	// TODO: http://api.kde.org/4.x-api/kdelibs-apidocs/kdecore/html/classKCmdLineArgs.html
 	{
-		auto arguments = a.arguments();
+		QStringList arguments = getCliArguments(argc, argv);
 		if ((arguments.indexOf("-h") != -1) || (arguments.indexOf("--help") != -1)) {
 			qDebug() << "QtWeb options:";
 			qDebug() << "";
@@ -105,6 +113,8 @@ int main(int argc, char** argv) {
 		qDebug() << "Socks" << options.socks;
 		qDebug() << "Socks resolver" << options.socksResolver;
 	}
+
+	QApplication a(argc, argv);
 
 	// release view
 	Lambda qHandler([&]() {
