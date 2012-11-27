@@ -12,6 +12,8 @@
 #include "connector.h"
 
 #include <QDebug>
+#include <QWebFrame>
+#include <QMouseEvent>
 #include <QDesktopWidget>
 #include <QApplication>
 
@@ -141,6 +143,66 @@ namespace Wrapper {
 
 			connector.waitWithoutGuiBlock(delay);
 		}
+
+		return true;
+	}
+
+	bool QWebPage::clickTo(QWebElement elementClickTo) const {
+		if (elementClickTo.isNull()) {
+			return false;
+		}
+
+		// TODO[place1] : drop code duplicate 
+		QPoint scroll = mainFrame()->scrollPosition();
+		QRect geom = elementClickTo.geometry();
+		QPoint center = geom.center();
+
+		qDebug() << "Scroll position" << scroll;
+		qDebug() << "Geometry before" << geom;
+		qDebug() << "Geometry center before" << center;
+
+		qDebug() << "Click";
+
+		int newX = center.x() - scroll.x();
+		int newY = center.y() - scroll.y();
+
+		qDebug() << "Need set cursor position to, x:" << newX << ", y:" << newY;
+		QCursor::setPos(newX, newY);
+
+		QMouseEvent press(QEvent::MouseButtonPress, center, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+		QApplication::sendEvent(view(), &press);
+		QMouseEvent release(QEvent::MouseButtonRelease, center, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+		QApplication::sendEvent(view(), &release);
+
+		return true;
+	}
+
+	bool QWebPage::setCursorTo(QWebElement elementSetCursorTo) const {
+		if (elementSetCursorTo.isNull()) {
+			return false;
+		}
+		
+		// TODO[place2] : drop code duplicate 
+		QPoint scroll = mainFrame()->scrollPosition();
+		QRect geom = elementSetCursorTo.geometry();
+		QPoint center = geom.center();
+
+		qDebug() << "Scroll position" << scroll;
+		qDebug() << "Geometry before" << geom;
+		qDebug() << "Geometry center before" << center;
+
+		qDebug() << "Move";
+
+		int newX = center.x() - scroll.x();
+		int newY = center.y() - scroll.y();
+		qDebug() << "Need to move, x:" << newX << ", y:" << newY;
+
+		// move element
+		center.setX(newX);
+		center.setY(newY);
+
+		qDebug() << "Geometry after" << geom;
+		qDebug() << "Geometry center after" << center;
 
 		return true;
 	}

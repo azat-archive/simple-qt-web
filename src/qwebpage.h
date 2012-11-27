@@ -33,6 +33,8 @@ namespace Wrapper {
 
 		// This method move mouse cursor to element, with delay between iterations of moving
 		bool moveMouseTo(QWebElement elementMoveTo, int delay = OPTIMAL_MSECS_BETWEEN_CHANGE_POSITION) const;
+		bool clickTo(QWebElement elementMoveTo) const;
+		bool setCursorTo(QWebElement elementMoveTo) const;
 	};
 }
 

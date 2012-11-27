@@ -2,6 +2,7 @@
 // Simple QtWeb
 //
 // Also it read STDIN and execute that as JS code
+// And some commands: see Options.*Prefix
 //
 
 #include <QtGui/QApplication>
@@ -30,85 +31,32 @@
 #include "lambda.h"
 #include "qwebpage.h"
 
-// settings
-#define MOVE
-#define CLICK // try to click by element, that we track 
-
 std::unique_ptr<QWebView> view;
 std::unique_ptr<QSocketNotifier> stdinNotifier;
 
 struct Options {
 	bool maximize;
 	QString url; // default url is "kernel.org"
-	QString element; // default element selector to find
 	QString userAgent; // default is that using in ga-kw
 	QString socks;
-	QString moveElementPrefix;
+	QString moveToElementPrefix;
+	QString clickToElementPrefix;
+	QString cursorSetToElementPrefix;
 	bool socksResolver;
 };
 // Set default options
 Options options = {
 	false,
 	QString("kernel.org"),
-	QString("img"),
 	QString("Mozilla/5.0 (X11; U; Linux i686;) Gecko/20110101 Firefox/3.6.13"),
 	QString(""),
 	QString("Move to "),
+	QString("Click to "),
+	QString("Cursor to "),
 	false,
 };
 
-// handler
-void handler(const int num) {
-	qDebug() << "Signal" << num;
-
-	QPoint scroll = view->page()->mainFrame()->scrollPosition();
-	QWebElement el = view->page()->mainFrame()->findFirstElement(options.element);
-	QRect geom = el.geometry();
-	QPoint center = geom.center();
-
-	qDebug() << "Scroll position" << scroll;
-
-	qDebug() << "Element position before" << geom;
-	qDebug() << "Element position center before" << center;
-
-#ifdef MOVE
-	qDebug() << "Move";
-
-	int newX = center.x() - scroll.x();
-	int newY = center.y() - scroll.y();
-	qDebug() << "Need to move, x:" << newX << ", y:" << newY;
-
-	// move element
-	center.setX(newX);
-	center.setY(newY);
-
-	qDebug() << "Element position after" << geom;
-	qDebug() << "Element position center after" << center;
-#endif
-
-#ifdef CLICK
-	qDebug() << "Click";
-	QCursor::setPos(newX, newY);
-
-	QMouseEvent press(QEvent::MouseButtonPress, center, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-	QApplication::sendEvent(view.get(), &press); 
-	QMouseEvent release(QEvent::MouseButtonRelease, center, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-	QApplication::sendEvent(view.get(), &release);
-#endif
-
-	qDebug() << "";
-}
-// \handler
-
 int main(int argc, char** argv) {
-	{
-		struct sigaction action;
-		action.sa_handler = handler;
-		sigemptyset(&action.sa_mask);
-		action.sa_flags = 0;
-		sigaction(SIGINT, &action, NULL);
-	}
-
 	QApplication a(argc, argv);
 
 	// Parse options
@@ -121,7 +69,6 @@ int main(int argc, char** argv) {
 			qDebug() << "--maximize";
 			qDebug() << "";
 			qDebug() << "--url";
-			qDebug() << "--element selector-to-track";
 			qDebug() << "--user-agent";
 			qDebug() << "--socks host:port";
 			qDebug() << "--socks-resolver";
@@ -139,10 +86,6 @@ int main(int argc, char** argv) {
 		if ((optionIndex = arguments.indexOf("--url")) != -1) {
 			options.url = arguments.at(optionIndex + 1);
 		}
-		// element to track
-		if ((optionIndex = arguments.indexOf("--element")) != -1) {
-			options.element = arguments.at(optionIndex + 1);
-		}
 		// user agent
 		if ((optionIndex = arguments.indexOf("--user-agent")) != -1) {
 			options.userAgent = arguments.at(optionIndex + 1);
@@ -158,7 +101,6 @@ int main(int argc, char** argv) {
 		}
 
 		qDebug() << "Maximize" << options.maximize;
-		qDebug() << "Element" << options.element;
 		qDebug() << "Load" << options.url;
 		qDebug() << "User-agent" << options.userAgent;
 		qDebug() << "Socks" << options.socks;
@@ -184,14 +126,14 @@ int main(int argc, char** argv) {
 		QNetworkProxy proxy;
 		proxy.setType(QNetworkProxy::Socks5Proxy);
 
-		QStringList splitedSocks = options.socks.split(":");
-		if (splitedSocks.count() != 2) {
+		int colonPosition = options.socks.lastIndexOf(":");
+		if (colonPosition == -1) {
 			qDebug() << "Malformed proxy (HOST:PORT is needed)";
 			return EXIT_FAILURE;
 		}
 
-		proxy.setHostName(splitedSocks[0]);
-		proxy.setPort(splitedSocks[1].toInt());
+		proxy.setHostName(options.socks.left(colonPosition));
+		proxy.setPort(options.socks.right(options.socks.length() - 1 - colonPosition).toInt());
 
 		if (options.socksResolver) {
 			proxy.setCapabilities(proxy.capabilities() | QNetworkProxy::HostNameLookupCapability);
@@ -213,6 +155,9 @@ int main(int argc, char** argv) {
 
 	// execute JS
 	{
+		// Reinterpret pointer to Wrapper class
+		Wrapper::QWebPage *page = reinterpret_cast<Wrapper::QWebPage *>(view->page());
+
 		// async read from STDIN
 		// and eval this as JS code
 		stdinNotifier.reset(new QSocketNotifier(STDIN_FILENO, QSocketNotifier::Read));
@@ -238,12 +183,19 @@ int main(int argc, char** argv) {
 				}
 			}
 
-			if (jsToExecute.startsWith(options.moveElementPrefix)) {
-				QString moveMouseToElementSelector = jsToExecute.remove(0, options.moveElementPrefix.length());
+			// TODO : drop code duplicating
+			if (jsToExecute.startsWith(options.moveToElementPrefix)) {
+				QString moveMouseToElementSelector = jsToExecute.remove(0, options.moveToElementPrefix.length());
 
-				// Reinterpret pointer to Wrapper class
-				Wrapper::QWebPage *page = reinterpret_cast<Wrapper::QWebPage *>(view->page());
 				page->moveMouseTo(page->mainFrame()->findFirstElement(moveMouseToElementSelector));
+			} else if (jsToExecute.startsWith(options.clickToElementPrefix)) {
+				QString clickMouseToElementSelector = jsToExecute.remove(0, options.clickToElementPrefix.length());
+
+				page->clickTo(page->mainFrame()->findFirstElement(clickMouseToElementSelector));
+			} else if (jsToExecute.startsWith(options.cursorSetToElementPrefix)) {
+				QString setCursorToElementSelector = jsToExecute.remove(0, options.cursorSetToElementPrefix.length());
+
+				page->setCursorTo(page->mainFrame()->findFirstElement(setCursorToElementSelector));
 			} else {
 				view->page()->mainFrame()->evaluateJavaScript(jsToExecute);	
 			}
