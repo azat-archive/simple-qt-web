@@ -1,9 +1,6 @@
 // 
 // Simple QtWeb
 //
-// Also it read STDIN and execute that as JS code
-// And some commands: see Options.*Prefix
-//
 
 #include <QtGui/QApplication>
 #include <QObject>
