@@ -5,7 +5,6 @@ Features:
 --------
 
 - Some commands: see Options.*Prefix
-
     - "Move to "
     - "Click to "
     - "Cursor to "
