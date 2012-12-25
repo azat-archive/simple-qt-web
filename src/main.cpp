@@ -153,6 +153,9 @@ int main(int argc, char** argv) {
 		qDebug() << "Proxy installed";
 	}
 
+    // Add inspector.
+    view->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+
 	view->load(QUrl(options.url));
 	if (options.maximize) {
 		view->showMaximized();
