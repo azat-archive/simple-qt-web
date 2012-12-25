@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
 	}
 
     // Add inspector.
-    view->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+	view->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 
 	view->load(QUrl(options.url));
 	if (options.maximize) {
