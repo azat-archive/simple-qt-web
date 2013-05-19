@@ -2,6 +2,7 @@ QMAKE_CXXFLAGS += -Wall -Werror -std=c++0x
 QMAKE_LFLAGS += -Wall -Werror -std=c++0x
 QT += network \
     webkit
+CONFIG += silent
 TARGET = web
 TEMPLATE = app
 
