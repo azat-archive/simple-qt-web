@@ -44,6 +44,7 @@ struct Options {
 	QString clickToElementPrefix;
 	QString cursorSetToElementPrefix;
 	bool socksResolver;
+	bool extraEnabled; // some extra stuff for QWebPage
 };
 // Set default options
 Options options = {
@@ -54,6 +55,7 @@ Options options = {
 	QString("Move to "),
 	QString("Click to "),
 	QString("Cursor to "),
+	false,
 	false,
 };
 
@@ -81,6 +83,7 @@ int main(int argc, char** argv) {
 			qDebug() << "--user-agent";
 			qDebug() << "--socks host:port";
 			qDebug() << "--socks-resolver";
+			qDebug() << "--extra-enabled";
 
 			return EXIT_SUCCESS;
 		}
@@ -108,12 +111,17 @@ int main(int argc, char** argv) {
 		if ((optionIndex = arguments.indexOf("--socks-resolver")) != -1) {
 			options.socksResolver = true; 
 		}
+		// enable extra
+		if ((optionIndex = arguments.indexOf("--extra-enabled")) != -1) {
+			options.extraEnabled = true;
+		}
 
 		qDebug() << "Maximize" << options.maximize;
 		qDebug() << "Load" << options.url;
 		qDebug() << "User-agent" << options.userAgent;
 		qDebug() << "Socks" << options.socks;
 		qDebug() << "Socks resolver" << options.socksResolver;
+		qDebug() << "Extra enabled" << options.extraEnabled;
 	}
 
 	QApplication a(argc, argv);
@@ -159,6 +167,13 @@ int main(int argc, char** argv) {
 
     // Add inspector.
 	view->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+	if (options.extraEnabled) {
+		view->page()->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
+		view->page()->settings()->setAttribute(QWebSettings::OfflineStorageDatabaseEnabled, true);
+		view->page()->settings()->setAttribute(QWebSettings::OfflineWebApplicationCacheEnabled, true);
+		view->page()->settings()->setAttribute(QWebSettings::LocalStorageEnabled, true);
+		view->page()->settings()->setAttribute(QWebSettings::LocalStorageDatabaseEnabled, true);
+	}
 
 	view->load(QUrl(options.url));
 	if (options.maximize) {
